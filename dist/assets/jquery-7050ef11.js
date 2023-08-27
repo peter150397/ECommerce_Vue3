@@ -1,4 +1,4 @@
-import{c as _r}from"./Pagination-8f043c3f.js";var Wr={exports:{}};/*!
+import{c as _r}from"./Pagination-a4f032a4.js";var Wr={exports:{}};/*!
  * jQuery JavaScript Library v3.7.0
  * https://jquery.com/
  *
