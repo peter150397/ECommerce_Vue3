@@ -41,11 +41,14 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+a{
+  border-radius: 10px;
+}
+
 .Active , .Active:focus{
   background-color: #0d6efd;
   color: white;
-  border-radius: 10px;
 }
 .Active:hover{
   background-color: #0a58ca;
