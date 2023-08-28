@@ -20,6 +20,7 @@ export default {
       const api = `${import.meta.env.VITE_APIPATH}logout`;
       this.$http.post(api).then((response) => {
         if (response.data.success) {
+          console.log(response.data);
           this.$router.push("/login");
         }else{
           this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });

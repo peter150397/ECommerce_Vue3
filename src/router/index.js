@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import axios from "axios";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -21,20 +22,21 @@ const router = createRouter({
           path: 'products',
           name: 'products',
           component: () => import('@/views/products.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
         {
           path: 'orders',
           name: 'orders',
           component: () => import('@/views/orders.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
         {
           path: 'coupons',
           name: 'coupons',
           component: () => import('@/views/coupons.vue'),
-          // meta: { requiresAuth: true }
+          meta: { requiresAuth: true }
         },
+        // 模擬訂單
         {
           path: 'customer',
           name: 'customer',
@@ -47,12 +49,28 @@ const router = createRouter({
         },
       ]
     },
-    { 
-      path: '/:domain(.*)*', 
-      name: 'NotFound', 
-      component: () => import('@/views/NotFound.vue') 
+    {
+      path: '/:domain(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/NotFound.vue')
     },
   ]
+})
+
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const api = `${import.meta.env.VITE_APIPATH}api/user/check`;
+    axios.post(api).then((response) => {
+      if (response.data.success) {
+        next();
+      } else {
+        next({ path: '/login' });
+      }
+    });
+  } else {
+    next();
+  }
 })
 
 export default router
