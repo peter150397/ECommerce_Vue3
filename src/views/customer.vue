@@ -1,6 +1,5 @@
 <template>
   <div>
-    <loading :active="isLoading" />
     <!-- ProductsList -->
     <div class="row mt-4">
       <div class="col-md-4 mb-4" v-for="item in products" :key="item.id">
@@ -188,12 +187,10 @@
 </template>
 
 <script>
-import $ from "jquery";
 import axios from "axios";
 import * as bootstrap from "bootstrap";
 
 import Pagination from "../components/Pagination.vue";
-import Loading from 'vue-loading-overlay';
 
 export default {
   data() {
@@ -203,18 +200,16 @@ export default {
       carts: [],
       couponCode: "",
       pagination: {},
-      isLoading: false,
     };
   },
   components: {
     Pagination,
-    Loading,
   },
   methods: {
     getProduct(page = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/products?page=${page}`;
       const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
       vm.products = [];
 
       axios.get(api).then((res) => {
@@ -223,37 +218,54 @@ export default {
             vm.products.push(item);
           }
         });
-        // vm.products = res.data.products;
         vm.pagination = res.data.pagination;
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
       });
     },
     getSingleProduct(id) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/product/${id}`;
       const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
         vm.singleProduct = res.data.product;
         vm.singleProduct.num = 1;
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
         new bootstrap.Modal('#productModal').show();
       });
     },
     getCart() {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/cart`;
       const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
         vm.carts = res.data.data;
-        vm.isLoading = false;
+
+        // let productIdArray = [];
+        // let tempProductArray = [];
+        // res.data.data.carts.forEach((item) => {
+        //   if(productIdArray.indexOf(item.product_id) == -1) {
+        //     productIdArray.push(item.product_id);
+        //     tempProductArray.push(item);
+        //   }else{
+        //     tempProductArray.forEach((tempItem) => {
+        //       if(tempItem.product_id === item.product_id) {
+        //         tempItem.qty += item.qty;
+        //         tempItem.total += item.total;
+        //         tempItem.final_total += item.final_total
+        //       }
+        //     })
+        //   }
+        // })
+        // vm.carts.carts = tempProductArray;
+        
+        this.$switchLoadingStatus.switchLoadingStatus(false);
       });
     },
     addToCart(id, qty = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/cart`;
-      const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
       let cart = {
         product_id: id,
         qty: qty,
@@ -261,7 +273,7 @@ export default {
 
       axios.post(api, { data: cart }).then((res) => {
         console.log(res.data);
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
         bootstrap.Modal.getOrCreateInstance('#productModal').hide();
         this.getCart();
       });
@@ -269,19 +281,19 @@ export default {
     deleteCart(id) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/cart/${id}`;
       const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.delete(api).then((res) => {
         console.log(res.data);
         vm.getCart();
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
       });
     },
     addCoupon() {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/coupon`;
       const vm = this;
       let sendCoupon = { code: vm.couponCode };
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.post(api, { data: sendCoupon }).then((res) => {
         console.log(res.data);
@@ -291,8 +303,7 @@ export default {
         } else {
           this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
         }
-
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
       });
     },
     createOrder(value) {
@@ -308,12 +319,11 @@ export default {
 
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/order`;
       const vm = this;
-      vm.isLoading = true;
 
       if (!vm.carts.carts[0]) {
         this.$mittBus.emit("message:push" , {message: "購物車內無商品，請先去購買" , status: "danger"});
-        vm.isLoading = false;
       } else {
+        this.$switchLoadingStatus.switchLoadingStatus(true);
         axios.post(api, { data: form }).then((res) => {
           if (res.data.success) {
             this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
@@ -321,7 +331,7 @@ export default {
           } else {
             this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
           }
-          vm.isLoading = false;
+          this.$switchLoadingStatus.switchLoadingStatus(false);
           vm.getCart();
         });
       }

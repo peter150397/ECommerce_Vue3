@@ -1,7 +1,5 @@
 <template>
   <div>
-    <loading :active="isLoading" />
-
     <div class="text-right mt-4">
       <button class="btn btn-primary" @click="openModal(true)">
         建立新的優惠券
@@ -105,12 +103,10 @@
 </template>
 
 <script>
-import $ from "jquery";
 import * as bootstrap from "bootstrap";
 import axios from "axios";
 
 import Pagination from "../components/Pagination.vue";
-import Loading from 'vue-loading-overlay';
 
 export default {
   data() {
@@ -120,23 +116,21 @@ export default {
       tempCoupon: {},
       pagination: {},
       tempTimestamp: 0,
-      isLoading: false,
     };
   },
   components: {
     Pagination,
-    Loading
   },
   methods: {
     getCouponList(page = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/admin/coupons?page=${page}`;
       const vm = this;
-      vm.isLoading = true;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
         vm.coupons = res.data.coupons;
         vm.pagination = res.data.pagination
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
       });
     },
     changeToTimestamp(e) {

@@ -5,6 +5,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import 'vue-loading-overlay/dist/css/index.css';
 import mitt from "mitt";
+import { switchLoadingStatus } from "./stores/switchLoadingStatus.js";
 // 引入 VeeValidate 元件跟功能
 import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';
 // 引入 VeeValidate 的驗證規則
@@ -21,7 +22,6 @@ import router from './router'
 Object.keys(AllRules).forEach((rule) => {
     defineRule(rule, AllRules[rule]);
 });
-
 // 將當前 VeeValidate 的語系設定為繁體中文
 configure({
     generateMessage: localize({ zh_TW: zhTW }),
@@ -32,13 +32,16 @@ setLocale('zh_TW');
 const app = createApp(App)
 
 app.use(VueAxios, axios)
-app.config.globalProperties.$mittBus = mitt()
 
 app.component('VField', Field);
 app.component('VForm', Form);
 app.component('VErrorMessage', ErrorMessage);
 
+app.config.globalProperties.$mittBus = mitt();
+
+
 app.use(createPinia())
+app.config.globalProperties.$switchLoadingStatus = switchLoadingStatus();
 app.use(router)
 
 app.mount('#app')

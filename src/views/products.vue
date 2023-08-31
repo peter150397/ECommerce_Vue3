@@ -1,7 +1,5 @@
 <template>
   <div>
-    <loading :active="isLoading" />
-
     <!-- PRODUCTS 商品表格 -->
 
     <div class="text-right mt-4">
@@ -172,7 +170,6 @@
 import axios from "axios";
 import * as bootstrap from "bootstrap";
 
-import Loading from 'vue-loading-overlay';
 import Pagination from "../components/Pagination.vue";
 
 export default {
@@ -182,25 +179,20 @@ export default {
       pagination: {},
       tempProduct: {},
       isNew: false,
-      isLoading: false,
-      status: {
-        uploadingFile: false,
-      },
-
-      modal: ''
     };
   },
   components: {
     Pagination,
-    Loading
   },
   methods: {
     getProduct(page = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/admin/products?page=${page}`;
       const vm = this;
-      vm.isLoading = true;
+      console.log(vm);
+
+      this.$switchLoadingStatus.switchLoadingStatus(true);
       axios.get(api).then((response) => {
-        vm.isLoading = false;
+        this.$switchLoadingStatus.switchLoadingStatus(false);
         vm.products = response.data.products;
         vm.pagination = response.data.pagination;
       });
@@ -249,7 +241,6 @@ export default {
     uploadFile() {
       const vm = this;
       const uploadedFile = this.$refs.files.files[0];
-      vm.status.uploadingFile = true;
 
       const formData = new FormData();
       formData.append("file-to-upload", uploadedFile);
@@ -263,11 +254,8 @@ export default {
         if (res.data.success) {
           Object.assign(vm.tempProduct, { imageUrl: res.data.imageUrl });
         }else{
-          console.log(res);
           this.$mittBus.emit("message:push" , {message: res.data.message , status: "danger"});
         }
-
-        vm.status.uploadingFile = false;
       });
     },
     currencyFilter(num) {

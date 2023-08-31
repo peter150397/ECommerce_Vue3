@@ -1,12 +1,13 @@
 <template>
   <div>
+    <Loading :active="$switchLoadingStatus.$state.isLoading"/>
     <Navbar />
     <AlertMessage />
     <div class="container-fluid">
       <div class="row">
         <Sidebar />
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="left: 250px">
-          <RouterView></RouterView>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <RouterView />
         </main>
       </div>
     </div>
@@ -19,12 +20,14 @@ import { RouterView } from "vue-router";
 import Navbar from "./Navbar.vue";
 import Sidebar from "./Sidebar.vue";
 import AlertMessage from "./AlertMessage.vue";
+import Loading from 'vue-loading-overlay';
 
 export default {
   components: {
     Navbar,
     Sidebar,
-    AlertMessage
+    AlertMessage,
+    Loading
   },
   created() {
     // * 將前端寫入的cookie發送給後端以獲取後端資料

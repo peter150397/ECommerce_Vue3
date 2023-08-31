@@ -4,9 +4,11 @@
       <form class="col-md-6" @submit.prevent="payOrder">
         <table class="table align-middle mb-4">
           <thead>
-            <th>品名</th>
-            <th>數量</th>
-            <th>單價</th>
+            <tr>
+              <th>品名</th>
+              <th>數量</th>
+              <th>單價</th>
+            </tr>
           </thead>
           <tbody>
             <tr v-for="item in order.products" :key="item.id">
@@ -14,13 +16,13 @@
               <td>
                 {{ item.qty }}/{{ item.product.unit }}
               </td>
-              <td class="align-middle text-right">{{ item.final_total }}</td>
+              <td>{{ item.final_total }}</td>
             </tr>
           </tbody>
           <tfoot>
             <tr>
-              <td colspan="2" class="text-right">總計</td>
-              <td class="text-right">{{ order.total }}</td>
+              <td colspan="2">總計</td>
+              <td>{{ order.total }}</td>
             </tr>
           </tfoot>
         </table>
@@ -53,7 +55,7 @@
           </tbody>
         </table>
         <div class="text-right" v-if="order.is_paid === false">
-          <button class="btn btn-primary">確認付款去</button>
+          <button type="submit" class="btn btn-primary">確認付款去</button>
         </div>
       </form>
     </div>
@@ -75,9 +77,10 @@ export default {
     getOrder() {
       const vm = this;
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/order/${vm.orderId}`;
+      this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
-        console.log(res);
+        this.$switchLoadingStatus.switchLoadingStatus(false);
         vm.order = res.data.order;
       });
     },
@@ -92,7 +95,6 @@ export default {
     },
   },
   created() {
-    // 13-3 將網址後面的訂單id取出
     this.orderId = this.$route.params.orderId;
     this.getOrder();
   },
