@@ -4,14 +4,20 @@ import axios from "axios";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    // {
-    //   path: '*',
-    //   redirect: 'login',
-    // },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/login.vue')
+    },
+    {
+      path: '/',
+      name: 'customer',
+      component: () => import('@/views/customer.vue')
+    },
+    {
+      path: '/customerCheckout/:orderId',
+      name: 'CustomerCheckout',
+      component: () => import('@/views/customerCheckout.vue')
     },
     {
       path: '/admin',
@@ -37,16 +43,16 @@ const router = createRouter({
           meta: { requiresAuth: true }
         },
         // 模擬訂單
-        {
-          path: 'customer',
-          name: 'customer',
-          component: () => import('@/views/customer.vue')
-        },
-        {
-          path: 'customerCheckout/:orderId',
-          name: 'CustomerCheckout',
-          component: () => import('@/views/customerCheckout.vue')
-        },
+        // {
+        //   path: 'customer',
+        //   name: 'customer',
+        //   component: () => import('@/views/customer.vue')
+        // },
+        // {
+        //   path: 'customerCheckout/:orderId',
+        //   name: 'CustomerCheckout',
+        //   component: () => import('@/views/customerCheckout.vue')
+        // },
       ]
     },
     {

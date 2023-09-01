@@ -1,7 +1,27 @@
 <template>
   <div>
+    <header class="p-3 text-bg-dark sticky-top" id="navbar">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <!-- <h1 class="mb-0 me-3">Peter</h1> -->
+          <i class="bi bi-building me-3"></i>
+
+          <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="#" class="nav-link px-2 text-white" @click.prevent="scrollDown('productsList')">商品列表</a></li>
+            <li><a href="#" class="nav-link px-2 text-white" @click.prevent="scrollDown('cart')">購物車</a></li>
+            <li><a href="#" class="nav-link px-2 text-white" @click.prevent="scrollDown('order')">送出訂單</a></li>
+          </ul>
+
+          <button type="button" class="btn btn-outline-light">
+            <RouterLink class="nav-link" to="/login">管理者登入</RouterLink>
+          </button>
+        </div>
+      </div>
+    </header>
     <!-- ProductsList -->
-    <div class="row mt-4">
+    <div id="productsList" class="row px-5 m-0 mt-3">
+      <h1><i class="bi bi-box2 fs-1 me-2"></i>商品列表</h1>
+      <hr>
       <div class="col-md-4 mb-4" v-for="item in products" :key="item.id">
         <div class="card">
           <img :src="item.imageUrl" class="card-img-top cardImage" alt="">
@@ -26,116 +46,122 @@
           </div>
         </div>
       </div>
+      <!-- Pagination -->
+      <Pagination :pagination="pagination" @getData="getProduct"></Pagination>
     </div>
 
-    <!-- Pagination -->
-
-    <Pagination :pagination="pagination" @getData="getProduct"></Pagination>
-
     <!-- Cart -->
-    <hr />
-    <div style="width: 60%" class="mx-auto">
-      <table class="table text-center align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>刪除</th>
-            <th>品名</th>
-            <th>數量</th>
-            <th>單價</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in carts.carts" :key="item.id">
-            <td>
-              <button class="btn btn-danger" @click="deleteCart(item.id)">
-                <img src="@/assets/trashCan.png" alt="" class="trashCanIcon">
-              </button>
-            </td>
-            <td>
-              {{ item.product.title }}
-              <div class="text-success" v-if="item.coupon">已套用優惠券</div>
-            </td>
-            <td>
-              {{ item.qty }} / {{ item.product.unit }}
-            </td>
-            <td>
-              {{ currencyFilter(item.product.price * item.qty) }}
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td class="py-4">總計</td>
-            <td>
-              {{ currencyFilter(carts.total) }}
-            </td>
-          </tr>
-          <tr v-if="carts.final_total !== carts.total">
-            <td></td>
-            <td></td>
-            <td class="text-primary py-4">折扣價</td>
-            <td class="text-primary">
-              {{ currencyFilter(carts.final_total) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- Coupon -->
-      <div class="input-group mb-3 input-group-sm">
-        <input type="text" class="form-control" v-model="couponCode" placeholder="請輸入優惠碼" />
-        <div class="input-group-append">
-          <button class="btn btn-outline-primary" @click="addCoupon" type="button">
-            套用優惠碼
-          </button>
+    <div id="cart" class="mt-3 px-5">
+      <h1><i class="bi bi-cart fs-1 me-2"></i>購物車</h1>
+      <hr />
+      <div style="width: 60%" class="mx-auto">
+        <table class="table text-center align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>刪除</th>
+              <th>品名</th>
+              <th>數量</th>
+              <th>單價</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in carts.carts" :key="item.id">
+              <td>
+                <button class="btn btn-danger" @click="deleteCart(item.id)">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </td>
+              <td>
+                {{ item.product.title }}
+                <div class="text-success" v-if="item.coupon">已套用優惠券</div>
+              </td>
+              <td>
+                {{ item.qty }} / {{ item.product.unit }}
+              </td>
+              <td>
+                {{ currencyFilter(item.product.price * item.qty) }}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="py-4">總計</td>
+              <td>
+                {{ currencyFilter(carts.total) }}
+              </td>
+            </tr>
+            <tr v-if="carts.final_total !== carts.total">
+              <td></td>
+              <td></td>
+              <td class="text-primary py-4">折扣價</td>
+              <td class="text-primary">
+                {{ currencyFilter(carts.final_total) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Coupon -->
+        <div class="input-group mb-3 input-group-sm">
+          <input type="text" class="form-control" v-model="couponCode" placeholder="請輸入優惠碼" />
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" @click="addCoupon" type="button">
+              套用優惠碼
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <hr />
+
     <!-- Order information -->
-    <div class="my-5 row justify-content-center">
-      <div class="col-md-6">
-        <VForm @submit="createOrder" class="d-flex flex-column gap-3" v-slot="{ meta, errors }">
-          <div>
-            <label for="useremail"><span class="text-danger">*</span> Email</label>
-            <VField type="email" rules="required|email" class="form-control" name="email" id="useremail"
-              placeholder="請輸入 Email" :class="{ 'is-invalid': errors.email }" />
-            <VErrorMessage name="email" class="text-danger" />
-          </div>
+    <div id="order" class="mt-3 px-5">
+      <h1><i class="bi bi-list-task fs-1 me-2"></i>送出訂單</h1>
+      <hr />
+      <div class="my-5 row justify-content-center">
+        <div class="col-md-6">
+          <VForm @submit="createOrder" class="d-flex flex-column gap-3" v-slot="{ meta, errors }">
+            <div>
+              <label for="useremail"><span class="text-danger">*</span> Email</label>
+              <VField type="email" rules="required|email" class="form-control" name="email" id="useremail"
+                placeholder="請輸入 Email" :class="{ 'is-invalid': errors.email }" />
+              <VErrorMessage name="email" class="text-danger" />
+            </div>
 
-          <div>
-            <label for="username"><span class="text-danger">*</span> 收件人姓名</label>
-            <VField type="text" rules="required" class="form-control" name="name" id="username" placeholder="輸入姓名"
-              :class="{ 'is-invalid': errors.name }" />
-            <VErrorMessage name="name" class="text-danger" />
-          </div>
+            <div>
+              <label for="username"><span class="text-danger">*</span> 收件人姓名</label>
+              <VField type="text" rules="required" class="form-control" name="name" id="username" placeholder="輸入姓名"
+                :class="{ 'is-invalid': errors.name }" />
+              <VErrorMessage name="name" class="text-danger" />
+            </div>
 
-          <div>
-            <label for="usertel"><span class="text-danger">*</span> 收件人電話</label>
-            <VField type="tel" rules="required|numeric" class="form-control" name="tel" id="usertel" placeholder="請輸入電話"
-              :class="{ 'is-invalid': errors.tel }" />
-            <VErrorMessage name="tel" class="text-danger" />
-          </div>
+            <div>
+              <label for="usertel"><span class="text-danger">*</span> 收件人電話</label>
+              <VField type="tel" rules="required|numeric" class="form-control" name="tel" id="usertel" placeholder="請輸入電話"
+                :class="{ 'is-invalid': errors.tel }" />
+              <VErrorMessage name="tel" class="text-danger" />
+            </div>
 
-          <div>
-            <label for="useraddress"><span class="text-danger">*</span> 收件人地址</label>
-            <VField type="text" rules="required" class="form-control" name="address" id="useraddress" placeholder="請輸入地址"
-              :class="{ 'is-invalid': errors.address }" />
-            <VErrorMessage name="address" class="text-danger" />
-          </div>
+            <div>
+              <label for="useraddress"><span class="text-danger">*</span> 收件人地址</label>
+              <VField type="text" rules="required" class="form-control" name="address" id="useraddress"
+                placeholder="請輸入地址" :class="{ 'is-invalid': errors.address }" />
+              <VErrorMessage name="address" class="text-danger" />
+            </div>
 
-          <div>
-            <label for="comment">留言</label>
-            <VField as="textarea" name="message" id="comment" class="form-control" cols="30" rows="10" />
-          </div>
-          <div class="text-right">
-            <button class="btn btn-danger me-3" type="reset">重設</button>
-            <button class="btn btn-primary" id="createOrderButton" type="submit"
-              :class="{ 'disabled': !meta.valid }">送出訂單</button>
-          </div>
-        </VForm>
+            <div>
+              <label for="comment">留言</label>
+              <VField as="textarea" name="message" id="comment" class="form-control" cols="30" rows="10" />
+            </div>
+            <div class="text-right">
+              <button class="btn btn-danger me-3" type="reset">重設</button>
+              <button class="btn btn-primary" id="createOrderButton" type="submit"
+                :class="{ 'disabled': !meta.valid }">送出訂單</button>
+            </div>
+          </VForm>
+        </div>
       </div>
     </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModal" aria-hidden="true">
@@ -187,8 +213,10 @@
 </template>
 
 <script>
+import $ from "jquery";
 import axios from "axios";
 import * as bootstrap from "bootstrap";
+import { RouterLink } from 'vue-router';
 
 import Pagination from "../components/Pagination.vue";
 
@@ -241,27 +269,12 @@ export default {
 
       axios.get(api).then((res) => {
         vm.carts = res.data.data;
-
-        // let productIdArray = [];
-        // let tempProductArray = [];
-        // res.data.data.carts.forEach((item) => {
-        //   if(productIdArray.indexOf(item.product_id) == -1) {
-        //     productIdArray.push(item.product_id);
-        //     tempProductArray.push(item);
-        //   }else{
-        //     tempProductArray.forEach((tempItem) => {
-        //       if(tempItem.product_id === item.product_id) {
-        //         tempItem.qty += item.qty;
-        //         tempItem.total += item.total;
-        //         tempItem.final_total += item.final_total
-        //       }
-        //     })
-        //   }
-        // })
-        // vm.carts.carts = tempProductArray;
-        
         this.$switchLoadingStatus.switchLoadingStatus(false);
       });
+    },
+    scrollDown(id) {
+      let scroll = $(`#${id}`).offset().top - $('#navbar').outerHeight() - 16;
+      $('html').scrollTop(scroll)
     },
     addToCart(id, qty = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/cart`;
@@ -321,13 +334,13 @@ export default {
       const vm = this;
 
       if (!vm.carts.carts[0]) {
-        this.$mittBus.emit("message:push" , {message: "購物車內無商品，請先去購買" , status: "danger"});
+        this.$mittBus.emit("message:push", { message: "購物車內無商品，請先去購買", status: "danger" });
       } else {
         this.$switchLoadingStatus.switchLoadingStatus(true);
         axios.post(api, { data: form }).then((res) => {
           if (res.data.success) {
             this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
-            vm.$router.push(`/admin/customerCheckout/${res.data.orderId}`)
+            vm.$router.push(`/customerCheckout/${res.data.orderId}`)
           } else {
             this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
           }
@@ -367,6 +380,7 @@ export default {
   margin: 0 auto;
 }
 
-.trashCanIcon {
-  width: 24px;
-}</style>
+i {
+  font-size: 24px;
+}
+</style>

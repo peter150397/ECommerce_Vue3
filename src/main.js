@@ -5,6 +5,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import 'vue-loading-overlay/dist/css/index.css';
 import mitt from "mitt";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import { switchLoadingStatus } from "./stores/switchLoadingStatus.js";
 // 引入 VeeValidate 元件跟功能
 import { Field, Form, ErrorMessage, defineRule, configure } from 'vee-validate';

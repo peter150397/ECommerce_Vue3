@@ -60,6 +60,7 @@
 import axios from "axios";
 
 import Pagination from '../components/Pagination.vue';
+
 export default {
   data() {
     return {

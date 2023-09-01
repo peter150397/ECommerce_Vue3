@@ -17,7 +17,7 @@
       <h5 class="px-3 my-4 text-muted fw-bold">模擬功能</h5>
       <ul class="nav flex-column">
         <li>
-          <RouterLink class="nav-link" to="/admin/customer" :class="{ 'Active': isActive == 'customer' }">模擬使用者畫面</RouterLink>
+          <RouterLink class="nav-link" to="/">使用者畫面</RouterLink>
         </li>
       </ul>
     </div>

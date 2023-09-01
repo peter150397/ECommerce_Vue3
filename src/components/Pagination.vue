@@ -1,7 +1,7 @@
 <template>
   <div>
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination m-0">
         <!-- pre page -->
 
         <li class="page-item" :class="{ disabled: !pagination.has_pre }"
