@@ -37,13 +37,11 @@
             </p>
           </td>
           <td>
-            <p class="text-right">
               {{ currencyFilter(item.total) }}
-            </p>
           </td>
           <td>
-            <span v-if="item.is_paid" class="is_paid">已付款</span>
-            <span v-if="!item.is_paid" class="not_paid">未付款</span>
+            <p v-if="item.is_paid" class="is_paid text-center mb-0">已付款</p>
+            <p v-if="!item.is_paid" class="not_paid text-center mb-0">未付款</p>
           </td>
           <td>
             <button v-if="!item.is_paid" class="btn btn-primary" @click="payOrder(item.id)">查看付款狀況</button>
@@ -60,6 +58,7 @@
 import axios from "axios";
 
 import Pagination from '../components/Pagination.vue';
+import { useIsFormTouched } from "vee-validate";
 
 export default {
   data() {
@@ -81,7 +80,33 @@ export default {
       this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
+        // 取得原始訂單列表
         vm.orders = Object.assign([], res.data.orders);
+        vm.orders.forEach((order) => {
+          // 將訂單內的購買商品改成陣列形式
+          let ObjToArray = Object.values(order.products);
+          // 裝入商品ID 以利於判斷新陣列中是否有重複商品了
+          let productIdArray = [];
+          // 新陣列
+          let tempArray = [];
+          ObjToArray.forEach((product)=> {
+            // 如果該商品ID尚未加入ID陣列，則將商品加入新陣列，並且將該商品ID加入ID陣列
+            if(productIdArray.indexOf(product.product_id) === -1) {
+              productIdArray.push(product.product_id);
+              tempArray.push(product);
+            // 如果該商品ID已經加入ID陣列，則搜尋相同ID之商品，並將數量、打折後總金額、總金額加入相同ID之商品中
+            }else{
+              tempArray.forEach((filterproduct) => {
+                if(filterproduct.product_id === product.product_id){
+                  filterproduct.final_total += product.final_total;
+                  filterproduct.total += product.total;
+                  filterproduct.qty += product.qty;
+                }
+              })
+            }
+          })
+          order.products = tempArray;
+        })
         vm.pagination = Object.assign({}, res.data.pagination);
 
         vm.getIncomeAndDebt(res.data.pagination.total_pages);
@@ -159,5 +184,9 @@ export default {
 .not_paid {
   color: red;
   font-weight: bold;
+}
+
+td > p:last-child{
+  margin: 0;
 }
 </style>

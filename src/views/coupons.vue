@@ -17,10 +17,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in coupons" :key="item.id">
+        <tr v-for="item in coupons" :key="item.id" :class="{'table-secondary': item.due_date * 1000 < new Date()}">
           <td>{{ item.title }}</td>
           <td>{{ item.percent }} %</td>
-          <td>{{ getDate(item.due_date) }}</td>
+          <td>{{ getDate(item.due_date) }} <span v-if="item.due_date * 1000 < new Date()">(已過期)</span></td>
           <td>
             <span v-if="item.is_enabled == 1" class="is_enabled">已啟用</span>
             <span v-else class="not_enabled">未啟用</span>
@@ -128,7 +128,11 @@ export default {
       this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
-        vm.coupons = res.data.coupons;
+        let sortArray = res.data.coupons.sort((a , b) => {
+          return a.due_date - b.due_date;
+        });
+        vm.coupons = sortArray;
+        // vm.coupons = res.data.coupons;
         vm.pagination = res.data.pagination
         this.$switchLoadingStatus.switchLoadingStatus(false);
       });
@@ -141,14 +145,13 @@ export default {
       vm.tempTimestamp = timestamp;
     },
     changeToDate(e) {
-      const vm = this;
       let date = new Date(e * 1000);
-
       let years = date.getFullYear();
-
-      let months = date.getMonth() + 1;
+      let months;
       if (date.getMonth() + 1 < 10) {
         months = `0${date.getMonth() + 1}`;
+      }else{
+        months = date.getMonth() + 1;
       }
 
       let days = date.getDate();
@@ -199,10 +202,20 @@ export default {
     },
     getDate(e) {
       let date = new Date(e * 1000);
-
+      let months;
+      let days;
       let years = date.getFullYear();
-      let months = date.getMonth() + 1;
-      let days = date.getDate();
+      if(date.getMonth() + 1 < 10) {
+        months = `0${date.getMonth() + 1}`;
+      }else{
+        months = date.getMonth() + 1;
+      }
+      if(date.getDate() < 10) {
+        days = `0${date.getDate() < 10}`;
+      }else{
+        days = date.getDate();
+      }
+
 
       return `${years}/${months}/${days}`;
     },
