@@ -188,7 +188,6 @@ export default {
     getProduct(page = 1) {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/admin/products?page=${page}`;
       const vm = this;
-      console.log(vm);
 
       this.$switchLoadingStatus.switchLoadingStatus(true);
       axios.get(api).then((response) => {
@@ -219,9 +218,13 @@ export default {
         httpMethod = "put";
       }
 
-      axios[httpMethod](api, { data: vm.tempProduct }).then((response) => {
-        bootstrap.Modal.getOrCreateInstance('#productsModal').hide();
-
+      axios[httpMethod](api, { data: vm.tempProduct }).then((res) => {
+        if (res.data.success) {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
+          bootstrap.Modal.getOrCreateInstance('#productsModal').hide();
+        } else {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
+        }
         vm.getProduct();
       });
     },
@@ -230,13 +233,18 @@ export default {
 
       if (!vm.isNew) {
         const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/admin/product/${vm.tempProduct.id}`;
-        axios.delete(api).then((response) => {
+        axios.delete(api).then((res) => {
+          if (res.data.success) {
+            this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
+
+            bootstrap.Modal.getOrCreateInstance('#delProductModal').hide();
+            bootstrap.Modal.getOrCreateInstance('#productsModal').hide();
+          } else {
+            this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
+          }
           vm.getProduct();
         });
       }
-
-      bootstrap.Modal.getOrCreateInstance('#delProductModal').hide();
-      bootstrap.Modal.getOrCreateInstance('#productsModal').hide();
     },
     uploadFile() {
       const vm = this;
@@ -253,8 +261,8 @@ export default {
       }).then((res) => {
         if (res.data.success) {
           Object.assign(vm.tempProduct, { imageUrl: res.data.imageUrl });
-        }else{
-          this.$mittBus.emit("message:push" , {message: res.data.message , status: "danger"});
+        } else {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
         }
       });
     },

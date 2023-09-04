@@ -28,12 +28,14 @@
           <td>{{ item.user.email }}</td>
           <td>
             <p v-for="product in item.products" :key="product.id">
-              {{ findProductById(product.product_id).title }}
+              <!-- {{ findProductById(product.product_id).title }} -->
+              {{ product.product.title }}
             </p>
           </td>
           <td>
             <p v-for="product in item.products" :key="product.id">
-              {{ product.qty }} {{ findProductById(product.product_id).unit }}
+              <!-- {{ product.qty }} {{ findProductById(product.product_id).unit }} -->
+              {{ product.qty }} {{ product.product.unit }}
             </p>
           </td>
           <td>
@@ -137,16 +139,6 @@ export default {
       axios.get(api).then((res) => {
         vm.products = res.data.products;
       });
-    },
-    findProductById(e) {
-      const vm = this;
-      let filterProducts = vm.products.find((item) => {
-        if (e === item.id) {
-          return true;
-        }
-      });
-
-      return filterProducts;
     },
     payOrder(id) {
       this.$router.push(`/admin/customerCheckout/${id}`)

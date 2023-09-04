@@ -89,7 +89,6 @@ export default {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/pay/${vm.orderId}`;
 
       axios.post(api).then((res) => {
-        console.log(res.data);
         vm.getOrder();
       });
     },

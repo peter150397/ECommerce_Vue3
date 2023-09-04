@@ -285,7 +285,6 @@ export default {
       };
 
       axios.post(api, { data: cart }).then((res) => {
-        console.log(res.data);
         this.$switchLoadingStatus.switchLoadingStatus(false);
         bootstrap.Modal.getOrCreateInstance('#productModal').hide();
         this.getCart();
@@ -297,7 +296,6 @@ export default {
       this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.delete(api).then((res) => {
-        console.log(res.data);
         vm.getCart();
         this.$switchLoadingStatus.switchLoadingStatus(false);
       });
@@ -309,7 +307,6 @@ export default {
       this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.post(api, { data: sendCoupon }).then((res) => {
-        console.log(res.data);
         if (res.data.success) {
           this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
           vm.getCart();

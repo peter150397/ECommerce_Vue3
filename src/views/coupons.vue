@@ -17,7 +17,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in coupons" :key="item.id" :class="{'table-secondary': item.due_date * 1000 < new Date()}">
+        <tr v-for="item in coupons" :key="item.id" :class="{ 'table-secondary': item.due_date * 1000 < new Date() }">
           <td>{{ item.title }}</td>
           <td>{{ item.percent }} %</td>
           <td>{{ getDate(item.due_date) }} <span v-if="item.due_date * 1000 < new Date()">(已過期)</span></td>
@@ -128,11 +128,10 @@ export default {
       this.$switchLoadingStatus.switchLoadingStatus(true);
 
       axios.get(api).then((res) => {
-        let sortArray = res.data.coupons.sort((a , b) => {
+        let sortArray = res.data.coupons.sort((a, b) => {
           return a.due_date - b.due_date;
         });
         vm.coupons = sortArray;
-        // vm.coupons = res.data.coupons;
         vm.pagination = res.data.pagination
         this.$switchLoadingStatus.switchLoadingStatus(false);
       });
@@ -148,15 +147,19 @@ export default {
       let date = new Date(e * 1000);
       let years = date.getFullYear();
       let months;
+      let days;
+      // let months = date.getMonth() + 1;
+      // let days = date.getDate();
       if (date.getMonth() + 1 < 10) {
         months = `0${date.getMonth() + 1}`;
-      }else{
+      } else {
         months = date.getMonth() + 1;
       }
 
-      let days = date.getDate();
       if (date.getDate() < 10) {
         days = `0${date.getDate()}`;
+      }else{
+        days = date.getDate();
       }
 
       return `${years}-${months}-${days}`;
@@ -187,7 +190,12 @@ export default {
       vm.tempCoupon.due_date = vm.tempTimestamp;
 
       axios[httpMethod](api, { data: vm.tempCoupon }).then((res) => {
-        bootstrap.Modal.getOrCreateInstance('#couponModal').hide();
+        if (res.data.success) {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
+          bootstrap.Modal.getOrCreateInstance('#couponModal').hide();
+        } else {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
+        }
         vm.getCouponList();
       });
     },
@@ -196,7 +204,12 @@ export default {
       const api = `${import.meta.env.VITE_APIPATH}api/${import.meta.env.VITE_CUSTOMPATH}/admin/coupon/${vm.tempCoupon.id}`;
 
       axios.delete(api).then((res) => {
-        bootstrap.Modal.getOrCreateInstance('#couponModal').hide();
+        if (res.data.success) {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "success" });
+          bootstrap.Modal.getOrCreateInstance('#couponModal').hide();
+        } else {
+          this.$mittBus.emit("message:push", { message: res.data.message, status: "danger" });
+        }
         vm.getCouponList();
       });
     },
@@ -205,14 +218,14 @@ export default {
       let months;
       let days;
       let years = date.getFullYear();
-      if(date.getMonth() + 1 < 10) {
+      if (date.getMonth() + 1 < 10) {
         months = `0${date.getMonth() + 1}`;
-      }else{
+      } else {
         months = date.getMonth() + 1;
       }
-      if(date.getDate() < 10) {
-        days = `0${date.getDate() < 10}`;
-      }else{
+      if (date.getDate() < 10) {
+        days = `0${date.getDate()}`;
+      } else {
         days = date.getDate();
       }
 
