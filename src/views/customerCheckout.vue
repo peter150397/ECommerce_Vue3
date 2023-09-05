@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="my-5 row justify-content-center">
+    <div class="my-5 mx-3 row justify-content-center">
       <form class="col-md-6" @submit.prevent="payOrder">
         <table class="table align-middle mb-4">
           <thead>

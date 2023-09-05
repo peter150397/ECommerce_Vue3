@@ -10,43 +10,41 @@
         <h1>{{ currencyFilter(totalDebt) }}</h1>
       </div>
     </div>
-    <table class="table mt-4 table-hover align-middle">
+    <table class="table mt-4 table-hover align-middle fs-6">
       <thead>
         <tr>
-          <th>購買時間</th>
-          <th>Email</th>
-          <th style="width:40%">購買項目</th>
-          <th>購買數量</th>
-          <th>應付金額</th>
-          <th>是否付款</th>
+          <th class="align-middle"><p class="m-0">購買時間</p></th>
+          <th class="d-md-table-cell d-none align-middle"><p class="m-0">Email</p></th>
+          <th class="align-middle"><p class="m-0">購買項目</p></th>
+          <th class="align-middle"><p class="m-0">購買數量</p></th>
+          <th class="align-middle"><p class="m-0">應付金額</p></th>
+          <th class="align-middle"><p class="m-0">是否付款</p></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in orders" :key="item.id">
-          <td>{{ getDate(item.create_at) }}</td>
-          <td>{{ item.user.email }}</td>
+          <td class="text-break"><p>{{ getDate(item.create_at) }}</p></td>
+          <td class="d-md-table-cell d-none"><p>{{ item.user.email }}</p></td>
           <td>
             <p v-for="product in item.products" :key="product.id">
-              <!-- {{ findProductById(product.product_id).title }} -->
               {{ product.product.title }}
             </p>
           </td>
           <td>
             <p v-for="product in item.products" :key="product.id">
-              <!-- {{ product.qty }} {{ findProductById(product.product_id).unit }} -->
               {{ product.qty }} {{ product.product.unit }}
             </p>
           </td>
-          <td>
-              {{ currencyFilter(item.total) }}
+          <td class="text-break">
+              <p>{{ currencyFilter(item.total) }}</p>
           </td>
           <td>
             <p v-if="item.is_paid" class="is_paid text-center mb-0">已付款</p>
             <p v-if="!item.is_paid" class="not_paid text-center mb-0">未付款</p>
           </td>
           <td>
-            <button v-if="!item.is_paid" class="btn btn-primary" @click="payOrder(item.id)">查看付款狀況</button>
+            <button v-if="!item.is_paid" class="btn btn-primary text-center" @click="payOrder(item.id)">付款狀況</button>
           </td>
         </tr>
       </tbody>
@@ -60,7 +58,6 @@
 import axios from "axios";
 
 import Pagination from '../components/Pagination.vue';
-import { useIsFormTouched } from "vee-validate";
 
 export default {
   data() {
@@ -156,6 +153,7 @@ export default {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "NTD",
+        maximumFractionDigits: 0
       }).format(num);
     }
   },
@@ -180,5 +178,11 @@ export default {
 
 td > p:last-child{
   margin: 0;
+}
+td:nth-child(3) {
+  min-width: 150px;
+}
+td:nth-child(4) {
+  min-width: 50px;
 }
 </style>

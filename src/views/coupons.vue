@@ -9,7 +9,7 @@
     <table class="table mt-4 table-hover align-middle">
       <thead>
         <tr>
-          <th style="width: 40%">名稱</th>
+          <th>名稱</th>
           <th>折扣</th>
           <th>到期日</th>
           <th>是否啟用</th>

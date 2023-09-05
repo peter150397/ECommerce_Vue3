@@ -1,9 +1,8 @@
 <template>
-  <div>
+  <div class="overflow-x-hidden">
     <header class="p-3 text-bg-dark sticky-top" id="navbar">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <!-- <h1 class="mb-0 me-3">Peter</h1> -->
           <i class="bi bi-building me-3"></i>
 
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
@@ -22,7 +21,7 @@
     <div id="productsList" class="row px-5 m-0 mt-3">
       <h1><i class="bi bi-box2 fs-1 me-2"></i>商品列表</h1>
       <hr>
-      <div class="col-md-4 mb-4" v-for="item in products" :key="item.id">
+      <div class="col-md-4 col-sm-6 mb-4" v-for="item in products" :key="item.id">
         <div class="card">
           <img :src="item.imageUrl" class="card-img-top cardImage" alt="">
           <div class="card-body">
@@ -51,10 +50,10 @@
     </div>
 
     <!-- Cart -->
-    <div id="cart" class="mt-3 px-5">
+    <div id="cart" class="mt-3 px-5 row">
       <h1><i class="bi bi-cart fs-1 me-2"></i>購物車</h1>
       <hr />
-      <div style="width: 60%" class="mx-auto">
+      <div class="mx-auto col-md-10 col-12">
         <table class="table text-center align-middle">
           <thead class="table-dark">
             <tr>
@@ -379,5 +378,11 @@ export default {
 
 i {
   font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .card {
+    height: auto;
+  }
 }
 </style>

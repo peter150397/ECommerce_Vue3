@@ -1,6 +1,6 @@
 <template>
   <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light">
-    <div class="pt-3 fw-bold">
+    <div class="pt-md-3 pt-0 fw-bold">
       <h5 class="px-3 my-4 text-muted fw-bold">管理員</h5>
       <ul class="nav flex-column">
         <li>

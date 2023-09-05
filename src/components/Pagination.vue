@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="d-flex justify-content-center">
+    <nav class="d-flex justify-content-center my-3">
       <ul class="pagination m-0">
         <!-- pre page -->
 
